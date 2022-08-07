@@ -1,13 +1,12 @@
 from datetime import datetime
 
 import praw
+from lxml.etree import LxmlError
 from newsplease import NewsPlease
 
-from lxml.etree import ParseError
 from chalicelib.settings import reddit_client_id, reddit_client_secret
 from chalicelib.database import Database
 from models import RedditArticlePost, AnalyzedNewsArticle, AnalyzedStatus
-import lxml
 
 class RedditArticlePostSerializer:
     def __init__(self):
@@ -47,7 +46,7 @@ class NewsReader:
         for db_post in db_posts:
             try:
                 scrapped_article = NewsPlease.from_url(db_post.url)
-            except lxml.etree.LxmlError as e:
+            except LxmlError as e:
                 db_article = AnalyzedNewsArticle(db_post.article_id, db_post.title, db_post.url)
                 db_article.analyze_status = 'ERROR'
                 db_article.analyze_comments = f'({type(e).__name__}){e}: {e.error_log}'
