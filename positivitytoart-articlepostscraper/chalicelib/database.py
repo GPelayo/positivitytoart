@@ -2,9 +2,10 @@ from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import false
 
 from chalicelib.settings import rdb_port, rdb_host, rdb_user, rdb_password, rdb_database_name
-from models import RedditArticlePost
+from models import RedditArticlePost, AnalyzedNewsArticle
 
 
 class Database:
@@ -14,10 +15,23 @@ class Database:
         self.session = self.session_maker()
         engine.connect()
 
-    def has_article(self, article_id: str):
+    def has_article(self, article_id: str) -> bool:
         obj = self.session.query(RedditArticlePost.article_id).filter_by(article_id=article_id).first()
         return obj is not None
 
-    def batch_write_articles(self, articles: List[RedditArticlePost]):
+    def set_posts_as_read(self, article_posts: List[RedditArticlePost]):
+        for ap in article_posts:
+            ap.is_read = True
+        self.session.commit()
+
+    def batch_write_posts(self, articles: List[RedditArticlePost]):
+        self.session.bulk_save_objects(articles)
+        self.session.commit()
+
+    def get_unread_reddit_news_posts(self, limit: int = 1) -> List[RedditArticlePost]:
+        condition = RedditArticlePost.is_read == false()
+        return self.session.query(RedditArticlePost).filter(condition).limit(limit=limit).all()
+
+    def batch_write_articles(self, articles: List[AnalyzedNewsArticle]):
         self.session.bulk_save_objects(articles)
         self.session.commit()
