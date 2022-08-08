@@ -10,13 +10,13 @@ from models import RedditArticlePost, AnalyzedNewsArticle
 
 
 class RedditArticlePostSerializer:
-    def __init__(self):
-        self.reddit = praw.Reddit(
+    def __init__(self, reddit=None, db_connection_url=None):
+        self.reddit = reddit or praw.Reddit(
             client_id=reddit_client_id,
             client_secret=reddit_client_secret,
             user_agent="Comment Extraction (by u/gpelayollc)",
         )
-        self.database = Database()
+        self.database = Database(db_connection_url)
 
     def get_articles(self, limit: int = 1000, score_threshold: int = 1000):
         db_posts = []
@@ -38,8 +38,8 @@ class RedditArticlePostSerializer:
 
 
 class NewsReader:
-    def __init__(self):
-        self.database = Database()
+    def __init__(self, db_connection_url=None):
+        self.database = Database(db_connection_url)
 
     def read_articles(self, limit: int = 1):
         db_articles = []

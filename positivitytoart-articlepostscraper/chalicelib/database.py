@@ -9,8 +9,9 @@ from vendor.models import RedditArticlePost, AnalyzedNewsArticle
 
 
 class Database:
-    def __init__(self):
-        engine = create_engine(f'postgresql://{rdb_user}:{rdb_password}@{rdb_host}:{rdb_port}/{rdb_database_name}')
+    def __init__(self, db_connection_url=None):
+        url = db_connection_url or f'postgresql://{rdb_user}:{rdb_password}@{rdb_host}:{rdb_port}/{rdb_database_name}'
+        engine = create_engine(url)
         self.session_maker = sessionmaker(bind=engine)
         self.session = self.session_maker()
         engine.connect()
