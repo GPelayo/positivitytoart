@@ -1,5 +1,5 @@
 from chalice import Chalice
-from chalicelib.updater import RedditArticlePostSerializer, NewsReader
+from chalicelib.extraction import NewsReader, RedditArticlePostExtractor
 
 app = Chalice(app_name='positivitytoart-articlepostscraper')
 

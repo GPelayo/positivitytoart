@@ -1,12 +1,13 @@
 from datetime import datetime
 
-import praw
 from lxml.etree import LxmlError
 from newsplease import NewsPlease
+import praw
 
 from chalicelib.settings import reddit_client_id, reddit_client_secret
 from chalicelib.database import Database
-from models import RedditArticlePost, AnalyzedNewsArticle, AnalyzedStatus
+from models import RedditArticlePost, AnalyzedNewsArticle
+
 
 class RedditArticlePostSerializer:
     def __init__(self):
