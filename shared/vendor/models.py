@@ -35,6 +35,7 @@ class AnalyzedNewsArticle(Base):
     analyze_status = Column(AnalyzedStatus)
     analyze_comments = Column(String)
     suggested_prompts = relationship('SuggestedPrompt')
+    suggested_hashtags = relationship('SuggestedHashtag')
 
     def __init__(self, article_id, title, url):
         super(AnalyzedNewsArticle, self).__init__()
@@ -52,6 +53,20 @@ class SuggestedPrompt(Base):
 
     def __init__(self, prompt_id, prompt_text, article_post_id):
         super(SuggestedPrompt, self).__init__()
+        self.prompt_id = prompt_id
+        self.prompt_text = prompt_text
+        self.article_post_id = article_post_id
+
+
+class SuggestedHashtag(Base):
+    __tablename__ = 'suggested_hashtag'
+
+    hashtag_id = Column(String, primary_key=True)
+    name = Column(String)
+    article_id = Column(String, ForeignKey('article_analysis.article_id'))
+
+    def __init__(self, prompt_id, prompt_text, article_post_id):
+        super(SuggestedHashtag, self).__init__()
         self.prompt_id = prompt_id
         self.prompt_text = prompt_text
         self.article_post_id = article_post_id
