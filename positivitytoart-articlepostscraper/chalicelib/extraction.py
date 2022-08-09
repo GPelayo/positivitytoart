@@ -50,7 +50,8 @@ class NewsReader:
             except LxmlError as e:
                 db_article = AnalyzedNewsArticle(db_post.article_id, db_post.title, db_post.url)
                 db_article.analyze_status = 'ERROR'
-                db_article.analyze_comments = f'({type(e).__name__}){e}: {e.error_log}'
+                error_log = e.error_log if hasattr(e, "error_log") else ""
+                db_article.analyze_comments = f'({type(e).__name__}){e} {error_log}'
             else:
                 db_article = AnalyzedNewsArticle(db_post.article_id, scrapped_article.title, db_post.url)
                 db_article.date_written = scrapped_article.date_publish
