@@ -9,6 +9,6 @@ def scrape_posts(event):
     RedditArticlePostSerializer().get_articles()
 
 
-@app.schedule('rate(10 minutes)')
+@app.schedule('rate(1 hour)')
 def read_articles(event):
     NewsReader().read_articles(limit=4)
