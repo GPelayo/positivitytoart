@@ -23,8 +23,8 @@ class RedditArticlePost(Base):
         self.url = url
 
 
-class AnalyzedNewsArticle(Base):
-    __tablename__ = 'analyzed_news_article'
+class ArticleAnalysis(Base):
+    __tablename__ = 'article_analysis'
 
     article_id = Column(String, primary_key=True)
     url = Column(String)
@@ -32,13 +32,13 @@ class AnalyzedNewsArticle(Base):
     date_written = Column(Date)
     description = Column(String)
     main_text = Column(String)
-    analyze_status = Column(AnalyzedStatus)
+    analysis_status = Column(AnalyzedStatus)
     analyze_comments = Column(String)
     suggested_prompts = relationship('SuggestedPrompt')
     suggested_hashtags = relationship('SuggestedHashtag')
 
     def __init__(self, article_id, title, url):
-        super(AnalyzedNewsArticle, self).__init__()
+        super(ArticleAnalysis, self).__init__()
         self.article_id = article_id
         self.headline = title
         self.url = url
@@ -49,7 +49,7 @@ class SuggestedPrompt(Base):
 
     prompt_id = Column(String, primary_key=True)
     prompt_text = Column(String)
-    article_id = Column(String, ForeignKey('analyzed_news_article.article_id'))
+    article_id = Column(String, ForeignKey('article_analysis.article_id'))
 
     def __init__(self, prompt_id, prompt_text, article_post_id):
         super(SuggestedPrompt, self).__init__()

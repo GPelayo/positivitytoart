@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import false
 
 from chalicelib.settings import rdb_database_name, rdb_host, rdb_password, rdb_port, rdb_user
-from vendor.models import RedditArticlePost, AnalyzedNewsArticle
+from models import ArticleAnalysis, RedditArticlePost
 
 
 class Database:
@@ -33,6 +33,6 @@ class Database:
         condition = RedditArticlePost.is_read == false()
         return self.session.query(RedditArticlePost).filter(condition).limit(limit=limit).all()
 
-    def batch_write_articles(self, articles: List[AnalyzedNewsArticle]):
+    def batch_write_articles(self, articles: List[ArticleAnalysis]):
         self.session.bulk_save_objects(articles)
         self.session.commit()
