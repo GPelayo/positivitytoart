@@ -5,7 +5,7 @@ from lxml.etree import LxmlError
 from newsplease import NewsPlease
 
 from chalicelib.database import Database
-from models import ArticleAnalysis
+from positivity_models.models import ArticleAnalysis
 
 news_log = logging.getLogger()
 

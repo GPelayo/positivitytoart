@@ -1,11 +1,11 @@
 from datetime import datetime
 
+from positivity_models.models import RedditArticlePost
 from praw.reddit import Reddit
 from praw.models import ListingGenerator
 
 from chalicelib.settings import reddit_client_id, reddit_client_secret
 from chalicelib.database import Database
-from models import RedditArticlePost
 
 
 class RedditArticleExtractor:

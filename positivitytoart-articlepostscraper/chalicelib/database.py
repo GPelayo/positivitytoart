@@ -1,11 +1,11 @@
 from typing import List
 
+from positivity_models.models import ArticleAnalysis, RedditArticlePost
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import false
 
 from chalicelib.settings import rdb_database_name, rdb_host, rdb_password, rdb_port, rdb_user
-from models import ArticleAnalysis, RedditArticlePost
 
 
 class Database:
