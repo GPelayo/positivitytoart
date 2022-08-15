@@ -10,16 +10,16 @@ from chalicelib.database import Database
 
 class RedditArticleExtractor:
     def __init__(self, reddit=None, db_connection_url=None):
-        self.reddit = reddit or praw.Reddit(
+        self.reddit = reddit or Reddit(
             client_id=reddit_client_id,
             client_secret=reddit_client_secret,
             user_agent="Comment Extraction (by u/gpelayollc)",
         )
         self.database = Database(db_connection_url)
 
-    def get_articles(self, limit: int = 1000, score_threshold: int = 1000):
+    def _get_articles(self, post_list: ListingGenerator, limit: int = 1000, score_threshold: int = 1000):
         db_posts = []
-        for praw_post in self.reddit.subreddit('UpliftingNews').new():
+        for praw_post in post_list:
             if len(db_posts) >= limit:
                 break
 
@@ -35,3 +35,8 @@ class RedditArticleExtractor:
         self.database.batch_write_posts(db_posts)
         self.database.session.close()
 
+    def get_hot_articles(self, limit: int = 1000, score_threshold: int = 1000):
+        self._get_articles(self.reddit.subreddit('UpliftingNews').hot(), limit, score_threshold)
+
+    def get_new_articles(self, limit: int = 1000, score_threshold: int = 1000):
+        self._get_articles(self.reddit.subreddit('UpliftingNews').new(), limit, score_threshold)
