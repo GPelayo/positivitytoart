@@ -16,10 +16,16 @@ class Database:
         self.session = self.session_maker()
         engine.connect()
 
-    def has_article(self, article_id: str) -> bool:
-        obj = self.session.query(RedditArticlePost.article_id).filter_by(article_id=article_id).first()
-        return obj is not None
+    def set_posts_as_read(self, article_posts: List[RedditArticlePost]):
+        for ap in article_posts:
+            ap.is_read = True
+        self.session.commit()
 
-    def batch_write_posts(self, articles: List[RedditArticlePost]):
+    def get_unread_reddit_news_posts(self, limit: int = 1) -> List[RedditArticlePost]:
+        condition = RedditArticlePost.is_read == false()
+        return self.session.query(RedditArticlePost).filter(condition).limit(limit=limit).all()
+
+    def batch_write_articles(self, articles: List[ArticleAnalysis]):
         self.session.bulk_save_objects(articles)
         self.session.commit()
+
