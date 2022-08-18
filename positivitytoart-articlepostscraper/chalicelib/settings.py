@@ -1,9 +1,5 @@
 import os
 
-import dotenv
-
-dotenv.load_dotenv()
-
 reddit_client_id = os.environ.get('REDDIT_CLIENT_ID')
 reddit_client_secret = os.environ.get('REDDIT_CLIENT_SECRET')
 reddit_username = os.environ.get('REDDIT_USERNAME')
