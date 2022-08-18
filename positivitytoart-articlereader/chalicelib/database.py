@@ -13,8 +13,14 @@ class Database:
         url = db_connection_url or f'postgresql://{rdb_user}:{rdb_password}@{rdb_host}:{rdb_port}/{rdb_database_name}'
         engine = create_engine(url)
         self.session_maker = sessionmaker(bind=engine)
+        self.session = None
+
+    def __enter__(self):
         self.session = self.session_maker()
-        engine.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.close()
 
     def set_posts_as_read(self, article_posts: List[RedditArticlePost]):
         for ap in article_posts:
