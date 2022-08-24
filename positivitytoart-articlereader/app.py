@@ -7,4 +7,4 @@ app = Chalice(app_name='positivitytoart-articlereader')
 
 @app.schedule('rate(1 hour)')
 def read_articles(event):
-    NewsReader().read_articles(limit=4)
+    NewsReader().read_articles(limit=max_articles)
