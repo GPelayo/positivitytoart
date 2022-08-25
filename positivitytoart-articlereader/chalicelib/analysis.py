@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import sys
 
@@ -43,6 +44,7 @@ class NewsReader:
                     db_article.description = api_article.get('meta_description')
                     db_article.main_text = api_article.get('text')
                     db_article.analysis_status = 'OK'
+                    db_article.date_analyzed = datetime.now()
                 db_articles.append(db_article)
 
             database.set_posts_as_read(db_posts)
