@@ -33,11 +33,16 @@ class NewsReader:
                 news_log.log(logging.INFO, f'Reading article: {db_post.title}')
                 response = requests.request("GET", self.api_url, headers=self.headers, params=querystring).json()
                 api_article = response.get('article')
-                db_article = ArticleAnalysis(db_post.article_id, api_article.get('title'), db_post.url)
-                db_article.date_written = api_article.get('published')
-                db_article.description = api_article.get('meta_description')
-                db_article.main_text = api_article.get('text')
-                db_article.analysis_status = 'OK'
+                db_article = ArticleAnalysis(db_post.article_id, db_post.title, db_post.url)
+                if response.get('status') == 'error':
+                    db_article.analysis_status = 'ERROR'
+                    db_article.analysis_comments = api_article
+                else:
+                    db_article.headline = api_article.get('title')
+                    db_article.date_written = api_article.get('published')
+                    db_article.description = api_article.get('meta_description')
+                    db_article.main_text = api_article.get('text')
+                    db_article.analysis_status = 'OK'
                 db_articles.append(db_article)
 
             database.set_posts_as_read(db_posts)
