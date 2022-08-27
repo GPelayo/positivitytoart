@@ -24,28 +24,22 @@ class NewsReader:
             "X-RapidAPI-Host": self.host
         }
 
-    def read_articles(self, limit: int = 1):
-        db_articles = []
-        with Database(db_connection_url=self.db_connection_url) as database:
-            db_posts = database.get_unread_reddit_news_posts(limit=limit)
-
-            for db_post in db_posts:
-                querystring = {"url": db_post.url}
-                news_log.log(logging.INFO, f'Reading article: {db_post.title}')
-                response = requests.request("GET", self.api_url, headers=self.headers, params=querystring).json()
-                api_article = response.get('article')
-                db_article = ArticleAnalysis(db_post.article_id, db_post.title, db_post.url)
-                if response.get('status') == 'error':
-                    db_article.analysis_status = 'ERROR'
-                    db_article.analysis_comments = api_article
-                else:
-                    db_article.headline = api_article.get('title')
-                    db_article.date_written = api_article.get('published')
-                    db_article.description = api_article.get('meta_description')
-                    db_article.main_text = api_article.get('text')
-                    db_article.analysis_status = 'OK'
-                    db_article.date_analyzed = datetime.now()
-                db_articles.append(db_article)
+    def _read_article(self, database, post):
+        querystring = {"url": post.url}
+        news_log.log(logging.INFO, f'Reading article: {post.title}')
+        response = requests.request("GET", self.api_url, headers=self.headers, params=querystring).json()
+        api_article = response.get('article')
+        article = ArticleAnalysis(post.article_id, post.title, post.url)
+        if response.get('status') == 'error':
+            article.analysis_status = 'ERROR'
+            article.analysis_comments = api_article
+        else:
+            article.headline = api_article.get('title')
+            article.date_written = api_article.get('published')
+            article.description = api_article.get('meta_description')
+            article.main_text = api_article.get('text')
+            article.analysis_status = 'OK'
+            article.date_analyzed = datetime.now()
 
             database.set_posts_as_read(db_posts)
             database.batch_write_articles(db_articles)
