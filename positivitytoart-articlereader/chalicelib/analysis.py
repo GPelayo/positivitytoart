@@ -15,12 +15,12 @@ news_log.setLevel(logging.INFO)
 
 
 class NewsReader:
-    def __init__(self, db_connection_url=None):
+    def __init__(self, db_connection_url=None, api_key=None):
         self.db_connection_url = db_connection_url
         self.host = 'extract-news.p.rapidapi.com'
         self.api_url = f'https://{self.host}/v0/article'
         self.headers = {
-            "X-RapidAPI-Key": extractnews_api,
+            "X-RapidAPI-Key": api_key or extractnews_api,
             "X-RapidAPI-Host": self.host
         }
 
