@@ -39,6 +39,7 @@ class NewsReader:
             article.description = api_article.get('meta_description')
             article.main_text = api_article.get('text')
             article.analysis_status = 'OK'
+            article.analysis_comments = success_analysis_comment_message
             article.date_analyzed = datetime.now()
 
         return article
