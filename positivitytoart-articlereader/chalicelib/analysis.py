@@ -41,5 +41,18 @@ class NewsReader:
             article.analysis_status = 'OK'
             article.date_analyzed = datetime.now()
 
-            database.set_posts_as_read(db_posts)
-            database.batch_write_articles(db_articles)
+        return article
+
+    def read_articles(self, limit: int = 1):
+        with Database(db_connection_url=self.db_connection_url) as database:
+            db_posts = database.get_unread_reddit_news_posts(limit=limit)
+            db_article = [self._read_article(db_post, 'Scheduled write.') for db_post in db_posts]
+            database.batch_set_posts_as_read(db_posts)
+            database.batch_write_articles(db_article)
+
+    def read_article(self, article_id: str):
+        with Database(self.db_connection_url) as database:
+            db_post = database.get_reddit_news_post(article_id)
+            db_article = self._read_article(db_post, 'Manually written.')
+            database.set_posts_as_read(db_post)
+            database.write_articles(db_article)
