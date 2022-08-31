@@ -24,7 +24,7 @@ class NewsReader:
             "X-RapidAPI-Host": self.host
         }
 
-    def _read_article(self, database, post):
+    def _read_article(self, post, success_analysis_comment_message=''):
         querystring = {"url": post.url}
         news_log.log(logging.INFO, f'Reading article: {post.title}')
         response = requests.request("GET", self.api_url, headers=self.headers, params=querystring).json()
