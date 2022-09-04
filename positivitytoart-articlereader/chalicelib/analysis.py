@@ -34,7 +34,7 @@ class NewsReader:
             article.analysis_status = 'ERROR'
             article.analysis_comments = api_article
         else:
-            article.headline = api_article.get('title')
+            article.headline = post.title
             article.date_written = api_article.get('published')
             article.description = api_article.get('meta_description')
             article.main_text = api_article.get('text')
