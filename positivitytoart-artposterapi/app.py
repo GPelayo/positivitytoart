@@ -16,7 +16,7 @@ def about():
 
 
 @app.route('/v1/budibase/post_schedule', methods=['POST'])
-def generate_hashtags_sched():
+def set_post_schedule():
     with Database() as database:
         json_params = app.current_request.json_body
         article_id = json_params.get('article_id')
