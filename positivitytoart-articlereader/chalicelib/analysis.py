@@ -5,7 +5,7 @@ import sys
 import requests
 
 from chalicelib.database import Database
-from chalicelib.settings import extractnews_api
+from chalicelib.settings import rapidapi_key
 from positivity_models.models import ArticleAnalysis
 
 logging.basicConfig(level=logging.INFO,
@@ -20,7 +20,7 @@ class NewsReader:
         self.host = 'extract-news.p.rapidapi.com'
         self.api_url = f'https://{self.host}/v0/article'
         self.headers = {
-            "X-RapidAPI-Key": api_key or extractnews_api,
+            "X-RapidAPI-Key": api_key or rapidapi_key,
             "X-RapidAPI-Host": self.host
         }
 
