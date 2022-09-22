@@ -1,5 +1,6 @@
-from chalicelib.database import Database
 from urllib.parse import urlparse
+
+from chalicelib.database import Database
 
 
 class PostFormatter:
