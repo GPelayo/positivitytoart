@@ -50,7 +50,8 @@ class Database:
         return self.session.query(ArticleAnalysis).filter(social_condition).filter(hashtag_condition).order_by(order)
 
     def get_article_hashtags(self, article_id: str) -> List[Hashtag]:
-        return self.session.query(Hashtag).filter(Hashtag.article_id == article_id).all()
+        return self.session.query(Hashtag).join(SuggestedHashtag, Hashtag.hashtag_id == SuggestedHashtag.hashtag_id)\
+            .filter(SuggestedHashtag.article_id == article_id).all()
 
     def get_tags_from_many_art_styles(self, art_style_ids: List[str]) -> List[Hashtag]:
         return self.session.query(Hashtag).filter(Hashtag.artstyle_id.in_(art_style_ids)).all()
