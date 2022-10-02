@@ -11,4 +11,5 @@ openai_client = os.environ.get('OPENAI_ORG')
 openai_password = os.environ.get('OPENAI_APIKEY')
 openai_config_bucket_name = os.environ.get('OPENAI_CONFIG_S3_BUCKET_NAME')
 hashtag_queue = os.environ.get('HASHTAG_QUEUE')
+hashtag_api = os.environ.get('HASHTAG_API')
 queue_url = f'https://sqs.{aws_region}.amazonaws.com/{aws_user}/{hashtag_queue}'

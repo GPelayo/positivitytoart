@@ -6,7 +6,7 @@ from chalice import Chalice, BadRequestError, CORSConfig
 import requests
 
 from chalicelib.database import Database
-from chalicelib.settings import hashtag_queue, queue_url
+from chalicelib.settings import hashtag_api, hashtag_queue, queue_url
 
 app = Chalice(app_name='positivitytoart-artposterapi')
 
