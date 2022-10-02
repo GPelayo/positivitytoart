@@ -1,7 +1,8 @@
 import hashlib
 from typing import List
 
-from positivity_models.models import (ArticleAnalysis,
+from positivity_models.models import (ArtStyle,
+                                      ArticleAnalysis,
                                       Hashtag,
                                       RedditArticlePost,
                                       SuggestedHashtag,
@@ -38,6 +39,15 @@ class Database:
 
     def get_article_analysis(self, article_id: str) -> ArticleAnalysis:
         return self.session.query(ArticleAnalysis).filter(ArticleAnalysis.article_id == article_id).first()
+
+    def get_all_art_styles(self) -> List[ArticleAnalysis]:
+        return self.session.query(ArtStyle).all()
+
+    def get_unused_analysis(self) -> List[ArticleAnalysis]:
+        social_condition = ~exists().where(SocialsDraft.image_post_id == ArticleAnalysis.article_id)
+        hashtag_condition = exists().where(SuggestedHashtag.article_id == ArticleAnalysis.article_id)
+        order = ArticleAnalysis.date_analyzed.desc()
+        return self.session.query(ArticleAnalysis).filter(social_condition).filter(hashtag_condition).order_by(order)
 
     def get_article_hashtags(self, article_id: str) -> List[Hashtag]:
         return self.session.query(Hashtag).filter(Hashtag.article_id == article_id).all()

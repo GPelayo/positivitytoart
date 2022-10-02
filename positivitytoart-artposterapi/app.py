@@ -43,6 +43,51 @@ def generate_hashtags(event):
             database.write_suggested_hashtags(article_analysis.article_id, hashtags)
 
 
+@app.route('/v1/analysis', methods=['GET', 'OPTiONS'], cors=CORSConfig(allow_headers=['Content-Type']))
+def list_article_analysis():
+    with Database() as database:
+        return {
+            'analyses': [analysis.to_dict() for analysis in database.list_reddit_analysis()]
+        }
+
+
+@app.route('/v1/analysis/{article_id}', methods=['GET', 'OPTiONS'], cors=CORSConfig(allow_headers=['Content-Type']))
+def get_article_analysis(article_id):
+    with Database() as database:
+        return {
+            'analysis': database.get_article_analysis(article_id).to_dict(),
+            'hashtags': [hashtag.to_dict() for hashtag in database.get_article_hashtags(article_id)],
+            'art_styles': [style.to_dict() for style in database.get_all_art_styles()]
+        }
+
+
+@app.route('/v1/unused_analysis', methods=['GET', 'OPTiONS'], cors=CORSConfig(allow_headers=['Content-Type']))
+def list_unused_analysis():
+    with Database() as database:
+        return {
+            'analyses': [analysis.to_dict() for analysis in database.get_unused_analysis()]
+        }
+
+
+@app.route('/v1/art_style', methods=['GET'], cors=CORSConfig(allow_headers=['Content-Type']))
+def list_art_styles():
+    with Database() as database:
+        return {
+            'art_styles': [style.to_dict() for style in database.get_all_art_styles()]
+        }
+
+
+@app.route('/v1/analysis/hashtags',
+           methods=['POST', 'OPTiONS'],
+           cors=CORSConfig(allow_headers=['Content-Type']))
+def list_art_styles():
+    request = app.current_request.json_body
+    article_id = request.get('article_id')
+    sqs = boto3.client('sqs')
+    sqs.send_message(QueueUrl=queue_url, MessageBody=article_id)
+    print(f'Starting process to generate hashtags for article, {article_id}')
+
+
 @app.route('/v1/budibase/hashtags/{article_id}', methods=['POST'])
 def send_hashtag_request(article_id):
     sqs = boto3.client('sqs')
