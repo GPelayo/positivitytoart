@@ -29,14 +29,10 @@ def generate_hashtags(event):
             article_id = record.body
             article_analysis = database.get_article_analysis(article_id)
             complete_text = f"{article_analysis.main_text} {article_analysis.description}"
-            request_json = {
-                'text': complete_text
-            }
-            attempts = 0
-            while max_hashtag_attempts < attempts:
-                attempts = 0
-                hashtag_response = requests.post('https://1x150zj9w5.execute-api.us-west-2.amazonaws.com/api/v1/hashtag',
-                                                 json=request_json)
+            request_json = {'text': complete_text}
+            for _ in range(max_hashtag_attempts):
+                hashtag_response = requests.post(hashtag_api, json=request_json)
+
                 if hashtag_response.ok:
                     break
             hashtags = hashtag_response.json().get('hashtags')

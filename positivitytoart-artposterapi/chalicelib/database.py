@@ -34,8 +34,10 @@ class Database:
             ap.is_read = True
         self.session.commit()
 
-    def get_all_reddit_analysis(self) -> List[ArticleAnalysis]:
-        return self.session.query(ArticleAnalysis).all()
+    def list_reddit_analysis(self, limit=25) -> List[ArticleAnalysis]:
+        order = ArticleAnalysis.date_analyzed.desc()
+        date_filter = ArticleAnalysis.date_analyzed != None
+        return self.session.query(ArticleAnalysis).filter(date_filter).order_by(order).limit(limit).all()
 
     def get_article_analysis(self, article_id: str) -> ArticleAnalysis:
         return self.session.query(ArticleAnalysis).filter(ArticleAnalysis.article_id == article_id).first()
