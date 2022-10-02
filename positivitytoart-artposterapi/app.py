@@ -2,7 +2,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 import boto3
-from chalice import Chalice, BadRequestError
+from chalice import Chalice, BadRequestError, CORSConfig
 import requests
 
 from chalicelib.database import Database
