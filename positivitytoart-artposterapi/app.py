@@ -93,12 +93,54 @@ def send_hashtag_request(article_id):
 
 @app.route('/v1/budibase/post_schedule', methods=['POST'])
 def set_post_schedule():
+    json_params = app.current_request.json_body
+    article_id = json_params.get('article_id')
+    art_styles = json_params.get('art_styles').split(',')
+    post_hashtags = json_params.get('topic_tags').split(',')
+    extra_tags = json_params.get('extra_tags')
+    schedule_date = json_params.get('instagram_scheduled_date')
+    image_key = json_params.get('image_key')
+    submit_draft(article_id, art_styles, post_hashtags, extra_tags, image_key)
+    scheduled_date = datetime.strptime(schedule_date or datetime.now(), '%Y-%m-%d %H:%M')
+
     with Database() as database:
-        json_params = app.current_request.json_body
-        article_id = json_params.get('article_id')
-        art_styles = json_params.get('art_styles').split(',')
-        post_hashtags = json_params.get('topic_tags').split(',')
-        extra_tags = json_params.get('extra_tags')
+        database.write_scheduled_insta_post(article_id, scheduled_date)
+
+    return {
+        'message': f'Successfully scheduled post for article {article_id}',
+        'data_received': json_params,
+    }
+
+
+@app.route('/v1/draft', methods=['POST'], cors=CORSConfig(allow_headers=['Content-Type']))
+def create_draft():
+    json_params = app.current_request.json_body
+    article_id = json_params.get('article_id')
+    art_styles = json_params.get('art_style_ids')
+    post_hashtags = json_params.get('auto_hashtag_ids')
+    extra_tags = json_params.get('extra_tags')
+    submit_draft(article_id, art_styles, post_hashtags, extra_tags, article_id)
+
+    return {
+        'message': f'Successfully scheduled post for article {article_id}',
+        'data_received': json_params,
+    }
+
+
+@app.route('/v1/draft/{article_id}/image',
+           methods=['POST'],
+           cors=CORSConfig(allow_headers=['Content-Type', 'Range', 'Accept', 'Content-Language']),
+           content_types=['image/png', 'image/jpg', 'image/jpeg'])
+def upload_image(article_id):
+    image_bytes = app.current_request.raw_body
+    res = boto3.resource('s3')
+    obj = res.Object(image_bucket_name, article_id)
+    obj.put(Body=image_bytes)
+    return {'message': f'Added Draft for article {article_id}.'}
+
+
+def submit_draft(article_id, art_styles, post_hashtags, extra_tags, image_key):
+    with Database() as database:
         style_tags = [hashtag.hashtag_text for hashtag in database.get_tags_from_many_art_styles(art_styles)]
         post_hashtags += style_tags
 

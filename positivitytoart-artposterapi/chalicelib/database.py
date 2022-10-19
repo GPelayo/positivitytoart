@@ -45,11 +45,17 @@ class Database:
     def get_all_art_styles(self) -> List[ArticleAnalysis]:
         return self.session.query(ArtStyle).all()
 
-    def get_unused_analysis(self) -> List[ArticleAnalysis]:
+    def _find_unsused_analysts(self):
         social_condition = ~exists().where(SocialsDraft.image_post_id == ArticleAnalysis.article_id)
         hashtag_condition = exists().where(SuggestedHashtag.article_id == ArticleAnalysis.article_id)
+        return self.session.query(ArticleAnalysis).filter(social_condition).filter(hashtag_condition)
+
+    def get_unused_analysis(self) -> List[ArticleAnalysis]:
         order = ArticleAnalysis.date_analyzed.desc()
-        return self.session.query(ArticleAnalysis).filter(social_condition).filter(hashtag_condition).order_by(order)
+        return list(self._find_unsused_analysts().order_by(order))
+
+    def has_unused_analysis(self, article_id) -> List[ArticleAnalysis]:
+        return self._find_unsused_analysts().filter(ArticleAnalysis.article_id == article_id).exists()
 
     def get_article_hashtags(self, article_id: str) -> List[Hashtag]:
         return self.session.query(Hashtag).join(SuggestedHashtag, Hashtag.hashtag_id == SuggestedHashtag.hashtag_id)\
@@ -89,21 +95,23 @@ class Database:
         self.session.bulk_save_objects(hashtags_db_objects)
         self.session.commit()
 
-    def write_scheduled_post(self, post_id, caption, scheduled_date, image_location):
-        socials = 'Instagram'
+    def submit_draft(self, post_id, caption, image_location):
         draft = SocialsDraft()
+        draft.image_post_id = post_id
         draft.image_location_type = 'url'
         draft.image_location = image_location
         draft.caption = caption
+        self.session.add(draft)
+        self.session.commit()
 
+    def write_scheduled_insta_post(self, post_id, scheduled_date):
+        socials = 'Instagram'
         post = ScheduledSocialsPost()
         post.post_action_id = f'{post_id}-{socials.lower()}'
-        post.image_post_id = draft.image_post_id = post_id
+        post.image_post_id = post_id
         post.scheduled_date = scheduled_date
         post.socials_platform = socials
         post.is_posted = False
         post.posting_notes = ''
-
-        self.session.add(draft)
         self.session.add(post)
         self.session.commit()
