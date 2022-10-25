@@ -73,8 +73,6 @@ class Database:
         condition = RedditArticlePost.is_read == read_expression if is_read is not None else true() == true()
         return self.session.query(RedditArticlePost).filter(condition).limit(limit=limit).all()
 
-    # def write_scheduled_post(self, image_key, caption, scheduled_date) -> List[RedditArticlePost]:
-
     def write_art_style(self, art_style, hashtags):
         self.session.add(art_style)
         self.session.commit()
