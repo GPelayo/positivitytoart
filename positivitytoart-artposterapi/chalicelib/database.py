@@ -98,6 +98,9 @@ class Database:
         join_match = SocialsDraft.image_post_id == ArticleAnalysis.article_id
         return self.session.query(SocialsDraft, ArticleAnalysis).join(ArticleAnalysis, join_match).order_by(order).all()
 
+    def get_draft(self, draft_id: str) -> SocialsDraft:
+        return self.session.query(SocialsDraft).filter(SocialsDraft.image_post_id == draft_id).one()
+
     def submit_draft(self, post_id, caption, image_location):
         draft = SocialsDraft()
         draft.image_post_id = post_id
