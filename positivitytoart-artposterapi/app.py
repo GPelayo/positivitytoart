@@ -112,6 +112,14 @@ def set_post_schedule():
     }
 
 
+@app.route('/v1/draft', methods=['GET'], cors=CORSConfig(allow_headers=['Content-Type']))
+def list_draft():
+    with Database() as database:
+        return {
+            'drafts': [{**a.to_dict(), **d.to_dict()} for d, a in database.list_drafts()]
+        }
+
+
 @app.route('/v1/draft', methods=['POST'], cors=CORSConfig(allow_headers=['Content-Type']))
 def create_draft():
     json_params = app.current_request.json_body

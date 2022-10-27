@@ -93,6 +93,11 @@ class Database:
         self.session.bulk_save_objects(hashtags_db_objects)
         self.session.commit()
 
+    def list_drafts(self):
+        order = ArticleAnalysis.date_analyzed.desc()
+        join_match = SocialsDraft.image_post_id == ArticleAnalysis.article_id
+        return self.session.query(SocialsDraft, ArticleAnalysis).join(ArticleAnalysis, join_match).order_by(order).all()
+
     def submit_draft(self, post_id, caption, image_location):
         draft = SocialsDraft()
         draft.image_post_id = post_id
