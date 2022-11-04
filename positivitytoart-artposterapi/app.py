@@ -6,7 +6,7 @@ from chalice import Chalice, BadRequestError, CORSConfig
 import requests
 
 from chalicelib.database import Database
-from chalicelib.settings import hashtag_api, hashtag_queue, queue_url
+from chalicelib.settings import hashtag_api, hashtag_queue, queue_url, aws_region, image_bucket_name
 
 app = Chalice(app_name='positivitytoart-artposterapi')
 
@@ -73,9 +73,7 @@ def list_art_styles():
         }
 
 
-@app.route('/v1/analysis/hashtags',
-           methods=['POST', 'OPTiONS'],
-           cors=CORSConfig(allow_headers=['Content-Type']))
+@app.route('/v1/analysis/hashtags', methods=['POST', 'OPTiONS'], cors=CORSConfig(allow_headers=['Content-Type']))
 def list_art_styles():
     request = app.current_request.json_body
     article_id = request.get('article_id')
@@ -163,15 +161,5 @@ def submit_draft(article_id, art_styles, post_hashtags, extra_tags, image_key):
 
         uri = urlparse(article_analysis.url)
         caption = f'{article_analysis.headline}\n\nSource: {uri.netloc}\n\n{tag_section} {extra_tags}'
-        scheduled_date_string = json_params.get('instagram_scheduled_date')
-        scheduled_date = datetime.strptime(scheduled_date_string, '%Y-%m-%d %H:%M')
-        image_key = json_params.get('image_key')
-        aws_region = 'us-west-2'
-        image_bucket = 'gpllc-dalle-images'
-        image_url = f'https://{image_bucket}.s3.{aws_region}.amazonaws.com/{image_key}'
-        database.write_scheduled_post(article_id, caption, scheduled_date, image_url)
-
-        return {
-            'message': f'Successfully scheduled post for article {article_id}',
-            'data_received': json_params,
-        }
+        image_url = f'https://{image_bucket_name}.s3.{aws_region}.amazonaws.com/{image_key}'
+        database.submit_draft(article_id, caption, image_url)
