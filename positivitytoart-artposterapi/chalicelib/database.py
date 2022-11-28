@@ -8,9 +8,10 @@ from positivity_models.models import (ArtStyle,
                                       SuggestedHashtag,
                                       SocialsDraft,
                                       ScheduledSocialsPost)
-from sqlalchemy import create_engine, or_
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import exists, false, true
+from sqlalchemy.engine.row import Row
 
 from chalicelib.settings import rdb_database_name, rdb_host, rdb_password, rdb_port, rdb_user
 

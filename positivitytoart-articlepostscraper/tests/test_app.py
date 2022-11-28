@@ -1,9 +1,3 @@
-from unittest.mock import patch
-
-import json
-import pytest
-import pprint
-
 from chalice.test import Client
 
 from app import app
